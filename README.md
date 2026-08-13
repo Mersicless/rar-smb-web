@@ -46,8 +46,7 @@ Por defecto la carpeta gestionada es:
 
 Puedes cambiarla con:
 
-```bash
-DOWNLOAD_DIR=/ruta/descargas npm start
+DOWNLOAD_DIR=/ruta/descargas 
 ```
 
 ## Docker
@@ -82,7 +81,7 @@ En la pantalla de transferencia usa este formato:
 Ejemplos:
 
 ```text
-//192.168.X.XX/carpeta/carpera2/salida
+//192.168.X.XX/carpeta/carpeta2/salida
 //mi-servidor/Compartido/Entregas
 ```
 
@@ -92,8 +91,8 @@ Si tu servidor SMB usa dominio o workgroup, escribe ese valor en el campo `Domin
 
 - El gestor de archivos solo puede listar y borrar dentro de la carpeta configurada como `DOWNLOAD_DIR`.
 - Los archivos de video como `.mkv` se descargan sin intentar extraerlos.
-- La contrasena solo es necesaria cuando el archivo descargado es un comprimido que debe extraerse.
-- La transferencia SMB calcula el progreso por archivos completados y tamano acumulado.
+- La contraseña solo es necesaria cuando el archivo descargado es un comprimido que debe extraerse.
+- La transferencia SMB calcula el progreso por archivos completados y tamaño acumulado.
 - Si seleccionas un archivo individual, se transfiere solo ese archivo a la ruta SMB indicada.
-- Si seleccionas una carpeta, se transfiere esa carpeta con su estructura interna.
-- Las contrasenas se usan para el proceso solicitado y no se guardan en archivos.
+- Si seleccionas una carpeta, se transfiere esa carpeta con su estructura interna y archivos.
+- Las contraseñas se usan para el proceso solicitado y no se guardan en archivos.
