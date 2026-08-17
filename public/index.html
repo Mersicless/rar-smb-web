@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RAR SMB Web</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>RAR SMB Web</h1>
+          <p>Descargas, extraccion y transferencia SMB</p>
+        </div>
+        <button id="refreshFiles" class="icon-button" type="button" title="Actualizar archivos" aria-label="Actualizar archivos">
+          <span aria-hidden="true">↻</span>
+        </button>
+      </header>
+
+      <section class="workspace">
+        <div class="panel flow-panel">
+          <h2>Descargar</h2>
+          <form id="downloadForm" class="form-grid">
+            <label class="wide">
+              <span>URL del archivo</span>
+              <input id="urlInput" name="url" type="url" autocomplete="url" placeholder="https://Ingrese-URL-Descarga" required>
+            </label>
+            <label>
+              <span>Contraseña si es comprimido</span>
+              <input id="rarPasswordInput" name="archivePassword" type="password" autocomplete="off">
+            </label>
+            <button class="primary-button" type="submit">Descargar</button>
+          </form>
+
+          <div class="job-card" id="downloadJob" hidden>
+            <div class="job-line">
+              <strong id="downloadStatus">Preparando</strong>
+              <span id="downloadPercent">0%</span>
+            </div>
+            <progress id="downloadProgress" max="100" value="0"></progress>
+            <p id="downloadMessage"></p>
+          </div>
+        </div>
+
+        <div class="panel transfer-panel">
+          <h2>Transferir por SMB</h2>
+          <form id="transferForm" class="form-grid">
+            <label class="wide">
+              <span>Ruta SMB</span>
+              <input id="smbRouteInput" name="route" type="text" placeholder="//192.168.xx.xxx/Carpeta-X/Carpeta-Z" required>
+            </label>
+            <label>
+              <span>Usuario</span>
+              <input id="smbUserInput" name="username" type="text" autocomplete="username" required>
+            </label>
+            <label>
+              <span>Contraseña</span>
+              <input id="smbPasswordInput" name="password" type="password" autocomplete="current-password" required>
+            </label>
+            <label>
+              <span>Dominio</span>
+              <input id="smbDomainInput" name="domain" type="text" placeholder="Opcional">
+            </label>
+            <button class="primary-button" type="submit">Transferir seleccion</button>
+          </form>
+
+          <div class="job-card" id="transferJob" hidden>
+            <div class="job-line">
+              <strong id="transferStatus">Preparando</strong>
+              <span id="transferPercent">0%</span>
+            </div>
+            <progress id="transferProgress" max="100" value="0"></progress>
+            <p id="transferMessage"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="file-manager">
+        <div class="file-toolbar">
+          <div>
+            <h2>Gestor de archivos</h2>
+            <p id="currentPath">/</p>
+          </div>
+          <div class="toolbar-actions">
+            <button id="goUp" type="button" title="Subir carpeta" aria-label="Subir carpeta">↑</button>
+            <button id="deleteSelected" type="button">Borrar seleccion</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="check-cell"><input id="selectAll" type="checkbox" aria-label="Seleccionar todo"></th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Tamano</th>
+                <th>Modificado</th>
+                <th>Accion</th>
+              </tr>
+            </thead>
+            <tbody id="fileRows">
+              <tr>
+                <td colspan="6" class="empty-state">Cargando archivos...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

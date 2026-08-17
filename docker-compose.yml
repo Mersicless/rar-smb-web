@@ -1,0 +1,12 @@
+services:
+  rar-smb-web:
+    build: .
+    container_name: rar-smb-web
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      DOWNLOAD_DIR: /downloads
+    volumes:
+      - ./downloads:/downloads
+    restart: unless-stopped
