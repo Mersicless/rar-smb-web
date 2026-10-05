@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "NODE_ENV=development node --watch src/server.js"
+    "dev": "NODE_ENV=development node --watch src/server.js",
+    "test": "node --test test/"
   },
   "dependencies": {
     "express": "^4.19.2"

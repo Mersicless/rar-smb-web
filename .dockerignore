@@ -1,0 +1,12 @@
+node_modules
+downloads
+descargas-prueba
+.git
+.gitignore
+*.log
+npm-debug.log*
+.env
+test
+capturas
+*.md
+!PASOS-PRUEBA-3001.md

@@ -3,19 +3,26 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>RAR SMB Web</title>
+    <title>RAR SMB WEB</title>
+    <script>
+      document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
+    </script>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <div>
-          <h1>RAR SMB Web</h1>
-          <p>Descargas, extraccion y transferencia SMB</p>
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true" data-icon="archive"></div>
+          <div class="brand-text">
+            <h1 class="brand-title" aria-label="RAR SMB WEB">RAR<span class="brand-dot">·</span>SMB<span class="brand-dot">·</span><span class="brand-accent">WEB</span></h1>
+            <p class="brand-flow"><span>Descargar</span><span>Extraer</span><span>Transferir por SMB</span></p>
+          </div>
         </div>
-        <button id="refreshFiles" class="icon-button" type="button" title="Actualizar archivos" aria-label="Actualizar archivos">
-          <span aria-hidden="true">↻</span>
-        </button>
+        <div class="topbar-actions">
+          <button id="themeToggle" class="icon-button" type="button" title="Cambiar tema" aria-label="Cambiar tema" data-icon-slot></button>
+          <button id="refreshFiles" class="icon-button" type="button" title="Actualizar archivos" aria-label="Actualizar archivos" data-icon="refresh"></button>
+        </div>
       </header>
 
       <section class="workspace">
@@ -30,17 +37,17 @@
               <span>Contraseña si es comprimido</span>
               <input id="rarPasswordInput" name="archivePassword" type="password" autocomplete="off">
             </label>
-            <button class="primary-button" type="submit">Descargar</button>
+            <label class="wide check-label">
+              <input id="deleteRarAfterExtract" name="deleteArchiveAfterExtract" type="checkbox" value="1">
+              <span>Borrar el .rar después de extraer</span>
+            </label>
+            <div class="form-actions wide">
+              <button class="ghost-button" type="button" data-clear-form="downloadForm">Limpiar campos</button>
+              <button class="primary-button" type="submit">Descargar</button>
+            </div>
           </form>
 
-          <div class="job-card" id="downloadJob" hidden>
-            <div class="job-line">
-              <strong id="downloadStatus">Preparando</strong>
-              <span id="downloadPercent">0%</span>
-            </div>
-            <progress id="downloadProgress" max="100" value="0"></progress>
-            <p id="downloadMessage"></p>
-          </div>
+          <div class="job-stack" id="downloadJobs" aria-live="polite"></div>
         </div>
 
         <div class="panel transfer-panel">
@@ -56,13 +63,20 @@
             </label>
             <label>
               <span>Contraseña</span>
-              <input id="smbPasswordInput" name="password" type="password" autocomplete="current-password" required>
+              <input id="smbPasswordInput" name="password" type="password" autocomplete="off" required>
             </label>
             <label>
               <span>Dominio</span>
               <input id="smbDomainInput" name="domain" type="text" placeholder="Opcional">
             </label>
-            <button class="primary-button" type="submit">Transferir seleccion</button>
+            <label class="wide check-label">
+              <input id="deleteLocalAfterTransfer" name="deleteLocalAfterTransfer" type="checkbox" value="1">
+              <span>Borrar después de transferir</span>
+            </label>
+            <div class="form-actions wide">
+              <button class="ghost-button" type="button" data-clear-form="transferForm">Limpiar campos</button>
+              <button class="primary-button" type="submit">Transferir selección</button>
+            </div>
           </form>
 
           <div class="job-card" id="transferJob" hidden>
@@ -80,11 +94,14 @@
         <div class="file-toolbar">
           <div>
             <h2>Gestor de archivos</h2>
-            <p id="currentPath">/</p>
+            <nav id="breadcrumbs" class="breadcrumbs" aria-label="Ruta actual"></nav>
           </div>
           <div class="toolbar-actions">
-            <button id="goUp" type="button" title="Subir carpeta" aria-label="Subir carpeta">↑</button>
-            <button id="deleteSelected" type="button">Borrar seleccion</button>
+            <span id="selectionCount" class="selection-count" hidden></span>
+            <button id="goUp" type="button" title="Subir carpeta" aria-label="Subir carpeta" data-icon="up"></button>
+            <button id="newFolder" type="button" data-icon="folder-plus" data-label="Nueva carpeta"></button>
+            <button id="moveSelected" type="button" data-icon="move" data-label="Mover selección"></button>
+            <button id="deleteSelected" type="button" data-icon="trash" data-label="Borrar selección"></button>
           </div>
         </div>
 
@@ -95,9 +112,9 @@
                 <th class="check-cell"><input id="selectAll" type="checkbox" aria-label="Seleccionar todo"></th>
                 <th>Nombre</th>
                 <th>Tipo</th>
-                <th>Tamano</th>
+                <th>Tamaño</th>
                 <th>Modificado</th>
-                <th>Accion</th>
+                <th>Acción</th>
               </tr>
             </thead>
             <tbody id="fileRows">
@@ -109,6 +126,31 @@
         </div>
       </section>
     </main>
+
+    <dialog id="moveDialog" class="move-dialog">
+      <form method="dialog" class="move-card">
+        <h3 id="moveTitle">Mover selección</h3>
+        <p class="move-hint">Elige la carpeta de destino.</p>
+        <nav id="moveCrumbs" class="breadcrumbs" aria-label="Destino"></nav>
+        <ul id="moveFolders" class="move-folders"></ul>
+        <div class="move-actions">
+          <button value="cancel" type="submit">Cancelar</button>
+          <button id="moveConfirm" class="primary-button" type="button">Mover aquí</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="deleteDialog" class="move-dialog delete-dialog">
+      <form method="dialog" class="move-card">
+        <h3 id="deleteTitle">Borrar selección</h3>
+        <p class="move-hint">Esta acción no se puede deshacer.</p>
+        <ul id="deleteList" class="delete-list"></ul>
+        <div class="move-actions">
+          <button value="cancel" type="submit">Cancelar</button>
+          <button id="deleteConfirm" class="danger-button" type="button">Borrar</button>
+        </div>
+      </form>
+    </dialog>
 
     <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 

@@ -41,7 +41,7 @@ export async function assertArchiveLooksValid(archivePath) {
   if (!check || check(prefix)) return;
   const preview = printablePrefix(prefix);
   const extra = preview ? ` Primeros bytes: "${preview}"` : "";
-  throw new Error(`El archivo descargado se llama ${extension}, pero no tiene firma de archivo comprimido valida.${extra}`);
+  throw new Error(`El archivo descargado se llama ${extension}, pero no tiene firma de archivo comprimido válida.${extra}`);
 }
 
 export async function extractArchive(job, archivePath, archivePassword) {
@@ -52,7 +52,7 @@ export async function extractArchive(job, archivePath, archivePassword) {
   const unrar = firstAvailableCommand(["unrar", "unrar-nonfree"]);
   if (path.extname(archivePath).toLowerCase() === ".rar" && unrar) {
     await runUnrar(unrar, archivePath, extractDir, archivePassword);
-    updateJob(job, { percent: 90, message: "Leyendo contenido extraido" });
+    updateJob(job, { percent: 90, message: "Leyendo contenido extraído" });
     return { extractDir, extracted: await listTree(extractDir) };
   }
 
@@ -62,7 +62,7 @@ export async function extractArchive(job, archivePath, archivePassword) {
       await runCommand(sevenZip, ["x", "-y", `-p${archivePassword}`, `-o${extractDir}`, archivePath]);
     } catch (error) {
       if (!commandExists("unar")) throw error;
-      updateJob(job, { message: "7-Zip fallo; probando extractor alterno" });
+      updateJob(job, { message: "7-Zip falló; probando extractor alterno" });
       await runUnarFallback(archivePath, extractDir, archivePassword, error);
     }
   } else if (commandExists("unar")) {
@@ -71,7 +71,7 @@ export async function extractArchive(job, archivePath, archivePassword) {
     throw new Error("No hay extractor instalado. Instala unrar, 7zip o unar.");
   }
 
-  updateJob(job, { percent: 90, message: "Leyendo contenido extraido" });
+  updateJob(job, { percent: 90, message: "Leyendo contenido extraído" });
   return { extractDir, extracted: await listTree(extractDir) };
 }
 
